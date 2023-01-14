@@ -67,6 +67,14 @@ server.post("/participants", async (req, res) => {
       lastStatus: timeData.valueOf(),
     });
 
+    await db.collection("messages").insertOne({
+      from: value.name,
+      to: "Todos",
+      text: "entra na sala...",
+      type: "status",
+      time: timeData.format("HH:mm:ss"),
+    });
+
     res.sendStatus(201);
   } catch (error) {
     console.log(error);
