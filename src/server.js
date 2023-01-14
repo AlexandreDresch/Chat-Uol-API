@@ -33,7 +33,7 @@ const signupSchema = Joi.object({
 
 const messageSchema = Joi.object({
   to: Joi.string().alphanum().min(1).required(),
-  text: Joi.string().alphanum().min(1).required(),
+  text: Joi.string().min(1).invalid(" ").required(),
   type: Joi.string()
     .alphanum()
     .min(1)
@@ -115,7 +115,11 @@ server.post("/messages", async (req, res) => {
   const { user } = req.headers;
   const { error, value } = messageSchema.validate(req.body);
 
+  console.log(user)
+  console.log(value)
+
   if (error) {
+    console.log(error);
     return res.sendStatus(422);
   }
 
