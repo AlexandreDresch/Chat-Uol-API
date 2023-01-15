@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { MongoClient, ObjectId } from "mongodb";
+import { stripHtml } from "string-strip-html";
 import Joi from "joi";
 import dayjs from "dayjs";
 import dotenv from "dotenv";
@@ -70,22 +71,24 @@ server.post("/participants", async (req, res) => {
     return res.sendStatus(422);
   }
 
+  const name = stripHtml(value.name).result.trim();
+
   try {
     const userIsTaken = await db
       .collection("participants")
-      .findOne({ name: value.name });
+      .findOne({ name: name });
 
     if (userIsTaken) {
       return res.sendStatus(409);
     }
 
     await db.collection("participants").insertOne({
-      name: value.name,
+      name: name,
       lastStatus: timeData.valueOf(),
     });
 
     await db.collection("messages").insertOne({
-      from: value.name,
+      from: name,
       to: "Todos",
       text: "entra na sala...",
       type: "status",
