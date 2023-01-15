@@ -164,14 +164,14 @@ server.get("/messages", async (req, res) => {
           { to: "Todos" },
           { to: user },
           { type: "status" },
-          
+          { type: "message" }
         ],
       })
       .toArray();
     if (limit === undefined) {
       return res.send(messages);
     } else {
-      const limitedMessages = messages.slice(-limit);
+      const limitedMessages = [...messages].slice(-limit).reverse();
       return res.send(limitedMessages);
     }
   } catch (error) {
