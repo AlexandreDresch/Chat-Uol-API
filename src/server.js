@@ -162,8 +162,6 @@ server.get("/messages", async (req, res) => {
           { from: user },
           { to: "Todos" },
           { to: user },
-          { type: "status" },
-          { type: "message" }
         ],
       })
       .toArray();
