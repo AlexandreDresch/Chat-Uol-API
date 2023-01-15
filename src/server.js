@@ -49,9 +49,11 @@ setInterval(async () => {
       if (dayjs().valueOf() - user.lastStatus > 10000) {
         await db.collection("participants").deleteOne({ _id: user._id });
         await db.collection("messages").insertOne({
+          from: user.name,
+          to: "Todos",
+          text: "sai da sala...",
           type: "status",
-          from: user.name,          
-          text: "sai da sala...",          
+          time: timeData.format("HH:mm:ss"),
         });
       }
     }
@@ -160,7 +162,7 @@ server.get("/messages", async (req, res) => {
     if (limit === undefined) {
       return res.send(messages);
     } else {
-      const limitedMessages = [...messages].slice(-limit).reverse();
+      const limitedMessages = [...messages].slice(-limit);
       return res.send(limitedMessages);
     }
   } catch (error) {
