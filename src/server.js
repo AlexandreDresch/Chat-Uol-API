@@ -43,8 +43,7 @@ const messageSchema = Joi.object({
 
 setInterval(async () => {
   try {
-    const outOfTime = timeData.valueOf() - 10000;
-
+    const outOfTime = dayjs().valueOf() - 10000;
     const allUsers = await db.collection("participants").find().toArray();
 
     for (let user of allUsers) {
@@ -193,7 +192,7 @@ server.post("/status", async (req, res) => {
         .collection("participants")
         .updateOne(
           { _id: isUserOnline._id },
-          { $set: { lastStatus: timeData.valueOf() } }
+          { $set: { lastStatus: dayjs().valueOf() } }
         );
       res.sendStatus(200);
     } else {
