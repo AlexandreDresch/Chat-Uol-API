@@ -120,6 +120,11 @@ server.post("/messages", async (req, res) => {
     return res.sendStatus(422);
   }
 
+  const from = stripHtml(user).result.trim();
+  const to = stripHtml(value.to).result.trim();
+  const text = stripHtml(value.text).result.trim();
+  const type = stripHtml(value.type).result.trim();
+
   const userExists = await db
     .collection("participants")
     .findOne({ name: user });
@@ -130,10 +135,10 @@ server.post("/messages", async (req, res) => {
 
   try {
     await db.collection("messages").insertOne({
-      from: user,
-      to: value.to,
-      text: value.text,
-      type: value.type,
+      from,
+      to,
+      text,
+      type,
       time: timeData.format("HH:mm:ss"),
     });
 
