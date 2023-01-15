@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import Joi from "joi";
 import dayjs from "dayjs";
 import dotenv from "dotenv";
@@ -195,5 +195,31 @@ server.post("/status", async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+server.delete("/messages/:id", async (req, res) => {
+  const { id } = req.params;
+  const { user } = req.headers;
+
+  try {
+    const messages = await db.collection("messages");
+
+    const messageFromUser = await messages.findOne({ _id: ObjectId(id) });
+
+    if(!messageFromUser) {
+      return res.sendStatus(404);
+    }
+
+    if(messageFromUser.from !== user) {
+      return res.sendStatus(401);
+    }
+
+    await messages.deleteOne({ _id: ObjectId(id) });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+})
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
