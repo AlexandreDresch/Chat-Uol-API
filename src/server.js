@@ -162,7 +162,7 @@ server.get("/messages", async (req, res) => {
     if (limit === undefined) {
       return res.send(messages);
     } else {
-      const limitedMessages = [...messages].slice(-limit);
+      const limitedMessages = [...messages].slice(-limit).reverse();
       return res.send(limitedMessages);
     }
   } catch (error) {
