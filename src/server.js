@@ -118,7 +118,7 @@ server.post("/messages", async (req, res) => {
   console.log(user)
   console.log(value)
 
-  if (error) {
+  if (error || !user) {
     console.log(error);
     return res.sendStatus(422);
   }
@@ -128,7 +128,7 @@ server.post("/messages", async (req, res) => {
     .findOne({ name: user });
 
   if (!userExists) {
-    return res.sendStatus(409);
+    return res.sendStatus(422);
   }
 
   try {
