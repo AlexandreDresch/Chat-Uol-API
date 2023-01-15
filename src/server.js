@@ -49,11 +49,9 @@ setInterval(async () => {
       if (dayjs().valueOf() - user.lastStatus > 10000) {
         await db.collection("participants").deleteOne({ _id: user._id });
         await db.collection("messages").insertOne({
-          from: user.name,
-          to: "Todos",
-          text: "Sai da sala...",
           type: "status",
-          time: timeData.format("HH:mm:ss"),
+          from: user.name,          
+          text: "Sai da sala...",          
         });
       }
     }
