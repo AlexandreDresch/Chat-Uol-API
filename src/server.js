@@ -115,9 +115,6 @@ server.post("/messages", async (req, res) => {
   const { user } = req.headers;
   const { error, value } = messageSchema.validate(req.body);
 
-  console.log(user)
-  console.log(value)
-
   if (error || !user) {
     console.log(error);
     return res.sendStatus(422);
@@ -151,11 +148,12 @@ server.get("/messages", async (req, res) => {
   const { limit } = req.query;
   const { user } = req.headers;
 
-  const validateLimit = !!limit && +limit > 0 && Number.isInteger(+limit);
-
-  if (!validateLimit) {
-    return res.sendStatus(422);
-  }
+  if(limit !== undefined) {
+    const validateLimit = !!limit && +limit > 0 && Number.isInteger(+limit);
+    if (!validateLimit) {
+      return res.sendStatus(422);
+    }
+  }  
 
   try {
     const messages = await db
@@ -166,11 +164,11 @@ server.get("/messages", async (req, res) => {
           { to: "Todos" },
           { to: user },
           { type: "status" },
-          { type: "message" },
+          
         ],
       })
       .toArray();
-    if (!!limit) {
+    if (limit === undefined) {
       return res.send(messages);
     } else {
       const limitedMessages = messages.slice(-limit);
