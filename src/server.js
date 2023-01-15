@@ -51,7 +51,7 @@ setInterval(async () => {
         await db.collection("messages").insertOne({
           type: "status",
           from: user.name,          
-          text: "Sai da sala...",          
+          text: "sai da sala...",          
         });
       }
     }
