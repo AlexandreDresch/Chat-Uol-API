@@ -205,11 +205,11 @@ server.delete("/messages/:id", async (req, res) => {
 
     const messageFromUser = await messages.findOne({ _id: ObjectId(id) });
 
-    if(!messageFromUser) {
+    if (!messageFromUser) {
       return res.sendStatus(404);
     }
 
-    if(messageFromUser.from !== user) {
+    if (messageFromUser.from !== user) {
       return res.sendStatus(401);
     }
 
@@ -220,6 +220,47 @@ server.delete("/messages/:id", async (req, res) => {
     console.log(error);
     res.sendStatus(500);
   }
-})
+});
+
+server.put("/messages/:id", async (req, res) => {
+  const { user } = req.headers;
+  const { id } = req.params;
+
+  const { error, value } = messageSchema.validate(req.body);
+
+  if (error || !user) {
+    console.log(error);
+    return res.sendStatus(422);
+  }
+
+  const userExists = await db
+    .collection("participants")
+    .findOne({ name: user });
+
+  if (!userExists) {
+    return res.sendStatus(422);
+  }
+
+  try {
+    const messages = await db.collection("messages");
+
+    const messageFromUser = await messages.findOne({ _id: ObjectId(id) });
+
+    if (!messageFromUser) {
+      return res.sendStatus(404);
+    }
+
+    if (messageFromUser.from !== user) {
+      return res.sendStatus(401);
+    }
+
+    await messages.updateOne({ _id: ObjectId(id) }, { $set: value });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
 
 server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
