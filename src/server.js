@@ -43,12 +43,11 @@ const messageSchema = Joi.object({
 
 setInterval(async () => {
   try {
-    const outOfTime = dayjs().valueOf() - 10000;
     const allUsers = await db.collection("participants").find().toArray();
 
     for (let user of allUsers) {
-      if (user.lastStatus < outOfTime) {
-        await db.collection("participants").deleteOne({ name: user.name });
+      if (dayjs().valueOf() - user.lastStatus > 10000) {
+        await db.collection("participants").deleteOne({ _id: user._id });
         await db.collection("messages").insertOne({
           from: user.name,
           to: "Todos",
