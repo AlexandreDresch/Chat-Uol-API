@@ -48,6 +48,7 @@ setInterval(async () => {
 
     for (let user of allUsers) {
       if (user.lastStatus < outOfTime) {
+        await db.collection("participants").deleteOne({ name: user.name });
         await db.collection("messages").insertOne({
           from: user.name,
           to: "Todos",
@@ -55,8 +56,6 @@ setInterval(async () => {
           type: "status",
           time: timeData.format("HH:mm:ss"),
         });
-
-        await db.collection("participants").deleteOne({ _id: user._id });
       }
     }
   } catch (error) {
@@ -147,22 +146,18 @@ server.get("/messages", async (req, res) => {
   const { limit } = req.query;
   const { user } = req.headers;
 
-  if(limit !== undefined) {
+  if (limit !== undefined) {
     const validateLimit = !!limit && +limit > 0 && Number.isInteger(+limit);
     if (!validateLimit) {
       return res.sendStatus(422);
     }
-  }  
+  }
 
   try {
     const messages = await db
       .collection("messages")
       .find({
-        $or: [
-          { from: user },
-          { to: "Todos" },
-          { to: user },
-        ],
+        $or: [{ from: user }, { to: "Todos" }, { to: user }],
       })
       .toArray();
     if (limit === undefined) {
